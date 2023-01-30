@@ -4,7 +4,7 @@ Calculation of empirical variogram for FESSTVaL station network
 
 @author: Bastian Kirsch (bastian.kirsch@uni-hamburg.de)
 
-Last updated: 27 January 2023
+Last updated: 30 January 2023
 """
 
 import numpy as np
@@ -16,6 +16,25 @@ dist_min,dist_max,dist_res = 0,15000,500 # (m)
 
 dist_bins = np.arange(dist_min,dist_max+dist_res,dist_res)
 dist_bin_mids = dist_bins[:-1]+dist_res/2.
+
+
+def read_coordinates(filename='network_coordinates.txt'):
+    '''
+    Parameters
+    ----------
+    filename : str, optional
+        Filepath of meta data file containing station coordinates.
+
+    Returns
+    -------
+    meta : pandas.DataFrame 
+        x and y coordinates (in m) of station locations with columns 
+        named 'X' and 'Y' and station names as index
+    '''
+    meta = pd.read_csv(filename,sep=';',header=0)
+    meta.set_index('NAME',inplace=True)
+    return meta
+
 
 def pair_stations(meta,bins=dist_bins,bin_labels=dist_bin_mids):
     '''
@@ -34,7 +53,6 @@ def pair_stations(meta,bins=dist_bins,bin_labels=dist_bin_mids):
     pairs : pandas.DataFrame
         Information on all station pairs (indices, names, distances, 
         distance bins)
-
     '''
     
     # Number of stations
@@ -69,7 +87,6 @@ def variogram(df):
     -------
     float
         Variogram value (in K^2)
-
     '''
     nn = (df['T0'].notnull() & df['T1'].notnull()).sum()
     if nn > 0:
@@ -91,7 +108,6 @@ def gradiogram(df):
     -------
     float
         Mean gradient (a.k.a. gradiogram) value (in K/km)
-
     '''
     nn = (df['T0'].notnull() & df['T1'].notnull()).sum()
     if nn > 0:
@@ -117,7 +133,6 @@ def calc_variogram(data,pairs,func=variogram):
     -------
     pandas.DataFrame
         Variogram or gradiogram with mid points of distance bins as index
-
     '''
 
     df_calc = pairs.copy(deep=True)
@@ -146,7 +161,6 @@ def calc_variogram_period(data,pairs,bin_labels=dist_bin_mids,func=variogram):
     -------
     df_variogram : pandas.DataFrame      
         Variogram or gradiogram with mid points of distance bins as index
-
     '''
 
     ntime = data.shape[0]

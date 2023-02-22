@@ -23,10 +23,12 @@ temp_gradiogram = eva.calc_variogram(temp_data.loc[0],pairs,func=eva.gradiogram)
 # Calculate variogram for time period
 temp_variogram_period = eva.calc_variogram_period(temp_data.loc[0:3],pairs)
 
+# Calculate direction-dependent variogram to check for anisotropy
+temp_variogram_aniso = eva.calc_variogram(temp_data.loc[0],pairs,anisotropy=True)
 ```
 
 ## Contact
 Bastian Kirsch (bastian.kirsch@uni-hamburg.de)<br>
 Meteorologisches Institut, Universität Hamburg, Germany
 
-30 January 2023
+22 February 2023

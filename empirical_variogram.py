@@ -4,7 +4,7 @@ Calculation of empirical variogram for FESSTVaL station network
 
 @author: Bastian Kirsch (bastian.kirsch@uni-hamburg.de)
 
-Last updated: 30 January 2023
+Last updated: 22 February 2023
 """
 
 import numpy as np
@@ -16,6 +16,9 @@ dist_min,dist_max,dist_res = 0,15000,500 # (m)
 
 dist_bins = np.arange(dist_min,dist_max+dist_res,dist_res)
 dist_bin_mids = dist_bins[:-1]+dist_res/2.
+
+# Number of direction bins for variogram anisotropy
+number_dir = 2 # 2, 4, or 8
 
 
 def read_coordinates(filename='network_coordinates.txt'):
@@ -36,7 +39,7 @@ def read_coordinates(filename='network_coordinates.txt'):
     return meta
 
 
-def pair_stations(meta,bins=dist_bins,bin_labels=dist_bin_mids):
+def pair_stations(meta,bins=dist_bins,bin_labels=dist_bin_mids,n_dir=number_dir):
     '''
     Parameters
     ----------
@@ -47,6 +50,8 @@ def pair_stations(meta,bins=dist_bins,bin_labels=dist_bin_mids):
         Edges of distance bins (in m)
     bin_labels : numpy.ndarray, optional
         Labels of distance bins, usually mid points of bins (in m)
+    n_dir : int, optional
+        Number of equally wide direction bins used for anisotropy calculation
 
     Returns
     -------
@@ -65,13 +70,26 @@ def pair_stations(meta,bins=dist_bins,bin_labels=dist_bin_mids):
     # Reading x and y coordinates from meta
     x0,x1 = meta.loc[pairs['S0'],'X'],meta.loc[pairs['S1'],'X']
     y0,y1 = meta.loc[pairs['S0'],'Y'],meta.loc[pairs['S1'],'Y']
-    # Calculating distance for each station pair
-    pairs['DIST'] = np.sqrt((x0.values-x1.values)**2+(y0.values-y1.values)**2)
+    # Calculating distance and direction for each station pair
+    with np.errstate(invalid='ignore'):
+        pairs['DIST'] = np.sqrt((x0.values-x1.values)**2+(y0.values-y1.values)**2)
+        pairs['DIR']  = np.arctan((y0.values-y1.values)/(x0.values-x1.values)) * (180./np.pi)
     # Assigning distance bin to each station pair (if provided)
     if len(bins) > 0:
         if len(bin_labels) == 0: bin_labels = np.arange(bins.shape[0]-1)
         pairs['DIST_BIN'] = pd.cut(pairs['DIST'],bins,labels=bin_labels)
-        
+    # Assigning direction bin to each station pair (if provided)
+    if n_dir in [2,4,8]:
+        dir_min,dir_max = -90,90
+        dir_binwidth = (dir_max-dir_min)/n_dir
+        dir_bins = np.zeros(n_dir+2) * np.nan
+        dir_bins[0],dir_bins[-1] = dir_min,dir_max
+        dir_bins[1:-1] = np.arange(dir_min+dir_binwidth/2.,dir_max+dir_binwidth/2.,dir_binwidth)
+        dir_bin_labels = np.arange(dir_min+dir_binwidth,dir_max+dir_binwidth,dir_binwidth)
+        i_labels = np.arange(n_dir+1)
+        dict_labels = dict(zip(i_labels,np.append(dir_bin_labels[-1],dir_bin_labels)))
+        pairs['DIR_BIN'] = pd.cut(pairs['DIR'],dir_bins,labels=i_labels).replace(dict_labels)
+          
     return pairs
 
 
@@ -114,8 +132,9 @@ def gradiogram(df):
         return ((df['T0']-df['T1']).abs()/df['DIST']).mean() * 1000
     else:
         return np.nan      
-        
-def calc_variogram(data,pairs,func=variogram):
+      
+    
+def calc_variogram(data,pairs,func=variogram,anisotropy=False):
     '''
     Calculate variogram for single time step 
     
@@ -128,6 +147,9 @@ def calc_variogram(data,pairs,func=variogram):
         Output of pair_stations
     func : function, optional
         Variogram or gradiogram 
+    anisotropy : bool, optional
+        Indicates if direction-dependent variogram is calculated to check
+        for anisotropy
 
     Returns
     -------
@@ -138,9 +160,22 @@ def calc_variogram(data,pairs,func=variogram):
     df_calc = pairs.copy(deep=True)
     df_calc['T0'] = data[pairs['S0']].values
     df_calc['T1'] = data[pairs['S1']].values
-    return df_calc.groupby('DIST_BIN').apply(func)
-
-  
+    
+    if not anisotropy:
+        return df_calc.groupby('DIST_BIN').apply(func)
+    else:
+        if 'DIR_BIN' not in pairs.columns:
+            print('No direction bins defined! Set n_dir in pair_stations!')
+            return
+        dir_bins  = np.sort(pairs['DIR_BIN'].unique())
+        dist_bins = np.sort(pairs['DIST_BIN'].unique().dropna())
+        df_aniso  = pd.DataFrame(index=dir_bins,columns=dist_bins)
+        for db in dir_bins:
+            ii = df_calc['DIR_BIN'] == db
+            df_aniso.loc[db] = df_calc[ii].groupby('DIST_BIN').apply(func)
+        return df_aniso 
+            
+        
 def calc_variogram_period(data,pairs,bin_labels=dist_bin_mids,func=variogram):
     '''
     Calculate variogram over given time period

@@ -4,7 +4,7 @@ Calculation of empirical variogram for FESSTVaL station network
 
 @author: Bastian Kirsch (bastian.kirsch@uni-hamburg.de)
 
-Last updated: 22 February 2023
+Last updated: 23 February 2023
 """
 
 import numpy as np
@@ -108,8 +108,7 @@ def variogram(df):
     '''
     nn = (df['T0'].notnull() & df['T1'].notnull()).sum()
     if nn > 0:
-        # factor 1/(2*nn) for semi-variogram
-        return (1/nn) * ((df['T0']-df['T1'])**2).sum()
+        return (1/(2*nn)) * ((df['T0']-df['T1'])**2).sum()
     else:
         return np.nan
 

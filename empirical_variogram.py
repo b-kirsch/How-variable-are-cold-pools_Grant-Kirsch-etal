@@ -4,7 +4,7 @@ Calculation of empirical variogram for FESSTVaL station network
 
 @author: Bastian Kirsch (bastian.kirsch@uni-hamburg.de)
 
-Last updated: 23 February 2023
+Last updated: 11 September 2023
 """
 
 import numpy as np
@@ -18,7 +18,7 @@ dist_bins = np.arange(dist_min,dist_max+dist_res,dist_res)
 dist_bin_mids = dist_bins[:-1]+dist_res/2.
 
 # Number of direction bins for variogram anisotropy
-number_dir = 2 # 2, 4, or 8
+number_dir = 0 # 2, 4, or 8
 
 
 def read_coordinates(filename='network_coordinates.txt'):
@@ -73,13 +73,13 @@ def pair_stations(meta,bins=dist_bins,bin_labels=dist_bin_mids,n_dir=number_dir)
     # Calculating distance and direction for each station pair
     with np.errstate(invalid='ignore'):
         pairs['DIST'] = np.sqrt((x0.values-x1.values)**2+(y0.values-y1.values)**2)
-        pairs['DIR']  = np.arctan((y0.values-y1.values)/(x0.values-x1.values)) * (180./np.pi)
     # Assigning distance bin to each station pair (if provided)
     if len(bins) > 0:
         if len(bin_labels) == 0: bin_labels = np.arange(bins.shape[0]-1)
         pairs['DIST_BIN'] = pd.cut(pairs['DIST'],bins,labels=bin_labels)
     # Assigning direction bin to each station pair (if provided)
     if n_dir in [2,4,8]:
+        pairs['DIR'] = np.arctan((y0.values-y1.values)/(x0.values-x1.values)) * (180./np.pi)
         dir_min,dir_max = -90,90
         dir_binwidth = (dir_max-dir_min)/n_dir
         dir_bins = np.zeros(n_dir+2) * np.nan
@@ -133,7 +133,8 @@ def gradiogram(df):
         return np.nan      
       
     
-def calc_variogram(data,pairs,func=variogram,anisotropy=False):
+def calc_variogram(data,pairs,func=variogram,anisotropy=False,
+                   return_valid_pairs=False):
     '''
     Calculate variogram for single time step 
     
@@ -149,7 +150,10 @@ def calc_variogram(data,pairs,func=variogram,anisotropy=False):
     anisotropy : bool, optional
         Indicates if direction-dependent variogram is calculated to check
         for anisotropy
-
+    return_valid_pairs : bool, optional  
+        Indicates if boolean array is returned that contains information
+        which station pairs have full valid input data
+        
     Returns
     -------
     pandas.DataFrame
@@ -159,6 +163,9 @@ def calc_variogram(data,pairs,func=variogram,anisotropy=False):
     df_calc = pairs.copy(deep=True)
     df_calc['T0'] = data[pairs['S0']].values
     df_calc['T1'] = data[pairs['S1']].values
+    
+    if return_valid_pairs:
+        return df_calc['T0'].notnull() & df_calc['T1'].notnull()
     
     if not anisotropy:
         return df_calc.groupby('DIST_BIN').apply(func)

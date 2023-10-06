@@ -13,6 +13,12 @@ Repository for code and data used for paper "How variable are cold pools?" by Le
 - **icon_routines.py**: Routines for reading and processing ICON-LES data used by read_icon_data.ipynb
 - **cp_spatial_analysis.py**: Routines needed for spatial interpolation of ICON data used by read_icon_data.ipynb
 
+### RAMS_Code
+- **fig1_data_v04.ipynb**: Creates NetCDF file containing data plotted in figure 1.
+- **get_network_Ts.py**: Reads in RAMS output, linerally interpolates temperature data to the FESSTVaL network, and saves this data as H5 files as an intermediate step. All of the other scripts in RAMS_code then use these H5 files.
+- **Tref_dTmean_dTmin_stds.ipynb**: Calculates the reference temperature, mean and minimum temperatures, and mean and minimum standard devations. All information included in table 1. 
+- **variogram_data_v02.ipynb**: Creates NetCDF file containing data plotted in figure 3.
+
 ### Data
 - **ta_network_icon_dom0{x}_20210629.nc**: Simulated air temperature from ICON-LES case study simulations on 29 June 2021 interpolated to locations of FESSTVaL station network (created by read_icon_data.ipynb)
 - **variogram_obs_20210629.nc**: Observed variograms of near-surface air temperature during FESSTVaL on 29 June 2021 at 1-min resolution (created by variogram_paper_obs_icon.py)

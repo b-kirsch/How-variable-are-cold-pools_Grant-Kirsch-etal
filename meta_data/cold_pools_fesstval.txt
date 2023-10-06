@@ -1,0 +1,43 @@
+#DATE;TIME(UTC);NAME;DIR_OF_MOVEMENT;DESCRIPTION
+20210517;1600;Cathy;NE;scattered cold air showers
+20210518;0700;;SE;scattered cold air showers
+20210519;0800;;SE;scattered cold air showers
+20210520;0730;;SE;scattered cold air showers
+20210522;1400;;NE;scattered cold air showers for several hours
+20210523;0900;;E;scattered cold air showers
+20210523;1200;;E;scattered cold air showers
+20210525;1100;;NE;scattered cold air showers
+20210525;1500;Linda;NE;scattered cold air showers
+20210527;1400;;E;scattered cold air showers
+20210527;1630;;E;line of cold air showers
+20210528;0800;;S;scattered cold air showers
+20210529;1230;;S;scattered cold air showers
+20210612;1000;;E;scattered showers associated with cold front passage
+20210612;1230;;SE;convective line associated with cold front passage
+20210619;1700;;N;weakening convective cell
+20210625;0800;;E;small-scale isolated showers
+20210626;0800;Felix;E;small-scale isolated showers
+20210629;1230;Jogi;N;cluster of strong convective cells
+20210705;1500;;NE;weakening showers
+20210709;1230;Robinson;N;cluster of strong convective cells
+20210709;1600;Freitag;N;strong convective cells
+20210711;2000;Bastian;S;outflow from large convective cluster
+20210713;2130;Marianne;S;large convective cluster
+20210717;0900;;SW;scattered convective cells
+20210725;1300;Jürg;N;cluster of strong convective cells
+20210801;1130;;E;scattered convective cells
+20210801;1530;;E;scattered convective cells
+20210803;1930;;NE;weak convective cluster
+20210804;0900;;E;nearly stationary convective cells
+20210804;1500;;NE;isolated convective cell
+20210808;1630;;NE;isolated convective cell
+20210808;2030;;NE;weak scattered showers
+20210809;1900;Frank;NE;weak convective cell
+20210810;0830;;NE;weak convective cluster
+20210810;1830;Stephanie;E;weak convective cluster
+20210816;0700;;NE;weak isolated showers
+20210822;1700;Deadpool;N;cluster of convective cells
+20210826;0900;;SE;scattered cold air showers
+20210826;1130;;SE;scattered cold air showers
+20210826;1400;;SE;scattered cold air showers
+20210827;0700;;S-SE-W;nearly stationary scattered cold air showers for several hours

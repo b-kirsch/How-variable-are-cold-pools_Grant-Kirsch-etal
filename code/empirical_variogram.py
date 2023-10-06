@@ -4,7 +4,31 @@ Calculation of empirical variogram for FESSTVaL station network
 
 @author: Bastian Kirsch (bastian.kirsch@uni-hamburg.de)
 
-Last updated: 11 September 2023
+Usage:
+    
+import pandas as pd
+import empirical_variogram as eva
+
+# Read station coordinates and create pairs
+coordinates = eva.read_coordinates('network_coordinates.txt')
+pairs       = eva.pair_stations(coordinates)
+
+# Set up synthetic temperature data
+temp_data = pd.DataFrame(columns=coordinates.index)
+for t in range(0,5): temp_data.loc[t] = coordinates['X'] * (t+1) * (0.1/1000) + 20
+
+# Calculate variogram and gradiogram (mean gradients) for single time step
+temp_variogram  = eva.calc_variogram(temp_data.loc[0],pairs)
+temp_gradiogram = eva.calc_variogram(temp_data.loc[0],pairs,func=eva.gradiogram)
+
+# Calculate variogram for time period
+temp_variogram_period = eva.calc_variogram_period(temp_data.loc[0:3],pairs)
+
+# Calculate direction-dependent variogram to check for anisotropy
+temp_variogram_aniso = eva.calc_variogram(temp_data.loc[0],pairs,anisotropy=True)
+
+
+Last updated: 6 October 2023
 """
 
 import numpy as np

@@ -1,10 +1,10 @@
 %% variogram_figures_2_3
 % script to read in variogram data from various simulations
-% and create figures 2-3 of GRL manuscript, "How varioable are cold pools?"
+% and create figures 2-3 of GRL manuscript, "How variable are cold pools?"
 %
 % written by: Leah Grant (leah.grant@colostate.edu), Sept 2023
 %
-% run with MATLAB_R2018a
+% tested with MATLAB_R2018a
 % 
 % needs access to some extra functions:  boundedline, multipan, 
 % set_figsize, and colormap arrays redblu, orangepurple, and parula

@@ -12,6 +12,8 @@ Repository for code and data used for paper "How variable are cold pools?" by Le
 - **read_icon_data.ipynb**: Main script for processing ICON-LES data
 - **icon_routines.py**: Routines for reading and processing ICON-LES data used by read_icon_data.ipynb
 - **cp_spatial_analysis.py**: Routines needed for spatial interpolation of ICON data used by read_icon_data.ipynb
+- **variogram_figures_2_3.m**: Matlab script for reading variogram netcdf files from observations and array of simulations, and creating Figures 2 and 3 of the manuscript
+- **matlab_functions/**: sub-folder containing Matlab functions and colormap arrays used by variogram_figures_2_3.m script
 
 ### RAMS_Code
 - **fig1_data_v04.ipynb**: Creates NetCDF file containing data plotted in figure 1.

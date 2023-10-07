@@ -24,8 +24,11 @@ Repository for code and data used for paper "How variable are cold pools?" by Le
 - **variogram_obs_20210629.nc**: Observed variograms of near-surface air temperature during FESSTVaL on 29 June 2021 at 1-min resolution (created by variogram_paper_obs_icon.py)
 - **variogram_obs_20210517-20210827.nc**: Observed variograms for entire FESSTVaL period at 15-min resolution (created by variogram_paper_obs_icon.py)
 - **variogram_icon_{xxx}m_20210629.nc**: Simulated variograms for ICON-LES case study simulations on 29 June 2021 at 15-min resolution (created by variogram_paper_obs_icon.py)
+- **CS-TropOce-{xxxx}_variogram-data_v02.nc**: Simulated variograms for CS-TropOce simulations (used in Fig. 3)
+- **variograms_IDEAL-DryBL-{xxx}.nc**: Simulated variograms for IDEAL-DryBL simulations at 1-min resolution (used in Fig. 3)
 - **fval_uhh_apollowxt_l3_ta_v01_20210629.nc**: Spatially interpolated temperature observations during FESSTVaL on 29 June 2021 at 1-min resolution (used for Fig. 1, see https://doi.org/10.5281/ZENODO.8161036 for interpolation method)
 - **ta_grid_icon_dom03_20210629.nc**: Simulated air temperature from ICON-LES case study simulations on 29 June 2021 interpolated to Cartesian grid (used for Fig. 1, created by read_icon_data.ipynb)
+- **IDEAL-DryBL-50_fig-1-data.nc**: Simulated air temperature from IDEAL-DryBL-50m simulation (used for Fig. 1)
 
 ### Meta data
 - **network_coordinates.txt**: x/y coordinates of FESSTVaL 2021 station network used by emprical_variogram.py

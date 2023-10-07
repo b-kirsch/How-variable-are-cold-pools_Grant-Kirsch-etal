@@ -1,0 +1,7 @@
+# ignore temporary files
+*.m~
+
+# ignore figure files
+*.png
+*.fig
+*.eps

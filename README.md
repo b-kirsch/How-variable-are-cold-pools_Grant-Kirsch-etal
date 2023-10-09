@@ -16,7 +16,7 @@ Repository for code and data used for paper "How variable are cold pools?" by Le
 - **matlab_functions/**: sub-folder containing Matlab functions and colormap arrays used by variogram_figures_2_3.m script
 
 ### RAMS_Code
-- **fig1_data_v04.ipynb**: Creates NetCDF file containing data plotted in figure 1.
+- **fig1_data_v05.ipynb**: Creates NetCDF file containing data plotted in figure 1.
 - **get_network_Ts.py**: Reads in RAMS output, linerally interpolates temperature data to the FESSTVaL network, and saves this data as H5 files as an intermediate step. All of the other scripts in RAMS_code then use these H5 files.
 - **Tref_dTmean_dTmin_stds.ipynb**: Calculates the reference temperature, mean and minimum temperatures, and mean and minimum standard devations. All information included in table 1. 
 - **variogram_data_v02.ipynb**: Creates NetCDF file containing data plotted in figure 3.
@@ -31,6 +31,7 @@ Repository for code and data used for paper "How variable are cold pools?" by Le
 - **fval_uhh_apollowxt_l3_ta_v01_20210629.nc**: Spatially interpolated temperature observations during FESSTVaL on 29 June 2021 at 1-min resolution (used for Fig. 1, see https://doi.org/10.5281/ZENODO.8161036 for interpolation method)
 - **ta_grid_icon_dom03_20210629.nc**: Simulated air temperature from ICON-LES case study simulations on 29 June 2021 interpolated to Cartesian grid (used for Fig. 1, created by read_icon_data.ipynb)
 - **IDEAL-DryBL-50_fig-1-data.nc**: Simulated air temperature from IDEAL-DryBL-50m simulation (used for Fig. 1)
+- **CS-TropOce-{xxxx}_fig-1-data_v05.nc** CS_TropeOce air temperature data used for Fig. 1.
 
 ### Meta data
 - **network_coordinates.txt**: x/y coordinates of FESSTVaL 2021 station network used by emprical_variogram.py

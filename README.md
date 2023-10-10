@@ -34,6 +34,8 @@ Repository for code and data used for paper "How variable are cold pools?" by Le
 - **CS-TropOce-{xxxx}_fig-1-data_v05.nc** CS_TropeOce air temperature data used for Fig. 1.
 - **IDEAL-{xx}shear-{xxxx}-variogram_data_v04.nc**: Simulated variograms for IDEAL-Shear simulations (used in Fig. 3)
 - **IDEAL-Upshear-100m-fig-1-data_v2.nc**: Simulated air temperature from IDEAL-Shear-100m simulation (used in Fig. 1)
+- **IDEAL-Haboob-150m_ensemble**: Simulated variograms for the IDEAL-Haboob-150m ensemble simulations (used in Fig. 3)
+- **IDEAL-Haboob-Day_150_fig-1-data_V3.5_offset.nc**: One example (IDEAL-Haboob-20KDay-150m) of simulated air temperature from the IDEAL-Haboob-150m simulation ensemble (used for Fig. 1)
 
 ### Meta data
 - **network_coordinates.txt**: x/y coordinates of FESSTVaL 2021 station network used by emprical_variogram.py

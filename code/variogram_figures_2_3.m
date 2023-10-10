@@ -30,7 +30,7 @@ for v=1:38 % loop over variogram data files
     % input directory containing nc files, relative to current directory
     nc_dir = '../data/';
     % input directory containing nc files for Jennie's ensemble
-    ensemble_dir = [nc_dir,'Jennie_ensemble/'];
+    ensemble_dir = [nc_dir,'IDEAL-Haboob-150m_ensemble/'];
     
     if v==1 % Jogi obs case
         name{v} = 'OBSJogi'; c=name{v};
@@ -191,13 +191,6 @@ for v=1:38 % loop over variogram data files
         cp_flag.(c) = cp_flag.(c)(itime_keep);
     end
     
-    % for IDEALhaboobSFC_night1, remove the last two entries, they are erroneous
-    % can probably remove this code when Jennie re-processes the variograms
-    if strcmp(c,'IDEALhaboobSFC_night1')
-        time.(c) = time.(c)(1:end-2);
-        variogram.(c) = variogram.(c)(:,1:end-2);
-        cp_flag.(c) = cp_flag.(c)(1:end-2);
-    end
 
         
     
@@ -269,13 +262,6 @@ for v=1:38 % loop over variogram data files
             error(['CP end time is before CP start time for ',cn])
         end
         
-        % for Jennie's ensemble of daytime haboobs, set CP duration to 1 h
-        % NOTE: need Jennie to change this in the nc files
-        if strcmp(c(1:min(length(c),11)),'IDEALhaboob')
-            if strcmp(c(end-3:end-1),'day')
-                cp2 = find(time_cprel.(cn) >= minutes(60),1,'first');
-            end
-        end
         
         
         % save variogram stats (mean, median, IQR)

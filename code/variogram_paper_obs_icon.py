@@ -55,8 +55,8 @@ calc_icon     = True
 icon_date     = dt.date(2021,6,29)
 
 # Obs + ICON data
-read_grid_data   = False # Obs level3 / ICON re-gridded
-write_nc         = True  # Variogram data
+read_grid_data   = True # Obs level3 / ICON re-gridded
+write_nc         = False  # Variogram data
 
 # Plots
 plot_fig1           = False
@@ -65,7 +65,7 @@ plot_figs2_time     = False
 
 
 if plot_fig1: read_grid_data = True
-if plot_figs1_hist: freq = 1
+#if plot_figs1_hist: freq = 1
 #----------------------------------------------------------------------------   
 # Advanced settings
 # Smoothing of APOLLO data

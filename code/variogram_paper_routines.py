@@ -5,7 +5,7 @@
 Reading, analysis and plotting routines to be used in variogram_paper_obs_icon.py
 
 
-Last updated: 5 October 2023
+Last updated: 11 October 2023
 """
 
 import os
@@ -138,7 +138,7 @@ def read_rams_ideal(fname='IDEAL-DryBL-50_fig-1-data.nc',datadir=datadir_io):
     
     return ds
 
-def read_rams_oceanic(res,fname='CS-TropOce-100_fig-1-data_v04.nc',datadir=datadir_io):
+def read_rams_oceanic(res,fname='CS-TropOce-100_fig-1-data_v05.nc',datadir=datadir_io):
     if res == 100:
         filename = datadir+'fig1/'+fname
     else:   
@@ -183,7 +183,7 @@ def read_rams_oceanic(res,fname='CS-TropOce-100_fig-1-data_v04.nc',datadir=datad
 
     return data
 
-def read_rams_haboob(type_str,fname='IDEAL-Haboob-Day_150_fig-1-data_V3.nc',datadir=datadir_io):
+def read_rams_haboob(type_str,fname='IDEAL-Haboob-Day_150_fig-1-data_V3.5_offset.nc',datadir=datadir_io):
     if type_str == 'Day':
         filename = datadir+'fig1/'+fname
     else:   
@@ -292,7 +292,7 @@ def figure1(obs_data,icon_data,rams_data_ideal,
     
     print('Plotting Figure 1')
     
-    fig,ax = plt.subplots(2,3,figsize=(10.2,8),dpi=400,constrained_layout=True) #11.5,9
+    fig,ax = plt.subplots(2,3,figsize=(9.6,7.7),dpi=400,constrained_layout=True) #11.5,9
     ax = ax.flatten()
     
     for p in range(2):
@@ -337,9 +337,9 @@ def figure1(obs_data,icon_data,rams_data_ideal,
     ax[p].annotate('',(meta_network.loc[stat1,'X']/1000.,meta_network.loc[stat1,'Y']/1000.),
                    (meta_network.loc[stat2,'X']/1000.,meta_network.loc[stat2,'Y']/1000.),
                    arrowprops={'arrowstyle':'<|-|>','lw':1.5,'color':'black'})
-    ax[p].annotate(r'$d$', xy=(-10.8,-9.5), ha='center', va='center',fontsize=fs)
-    ax[p].annotate(r'$T_\mathrm{j}$', xy=(-6.5,-8.0), ha='center', va='center',fontsize=fs)
-    ax[p].annotate(r'$T_\mathrm{i}$', xy=(-10.8,-14.5), ha='center', va='center',fontsize=fs)
+    ax[p].annotate(r'$d$', xy=(-10.8,-9.5), ha='center', va='center',fontsize=fs-1)
+    ax[p].annotate(r'$T_\mathrm{j}$', xy=(-6.5,-8.0), ha='center', va='center',fontsize=fs-1)
+    ax[p].annotate(r'$T_\mathrm{i}$', xy=(-10.8,-14.5), ha='center', va='center',fontsize=fs-1)
     
     for p in range(6):
         ax[p].set_title(abc[p]+' '+labels[p],fontsize=fs,loc='center',**{'weight': 'bold'})
@@ -358,7 +358,7 @@ def figure1(obs_data,icon_data,rams_data_ideal,
             ax[p].spines['left'].set_visible(False)
             
         ax[p].annotate(r'$t_0$+'+str(t0_times[p]), xy=(xy_lim-0.5,xy_lim-0.5), 
-                       ha='right', va='top',fontsize=fs)
+                       ha='right', va='top',fontsize=fs-1)
 
     cbar = fig.colorbar(co,ax=ax[3:],orientation='horizontal',shrink=0.4,aspect=5)
     cbar.ax.set_xlabel('Temperature perturbation (K)')
@@ -374,7 +374,7 @@ def figure1(obs_data,icon_data,rams_data_ideal,
 def figureS1(dist_data,plot_bins,pdir=plotdir):
 
     x_res = 3000
-    colors = ['darkgrey','royalblue','orange']
+    colors = ['darkgrey','royalblue','black'] # orange
     labels = ['Full network','OBS-Jogi (minimum)','CS-Jogi-75m']
     lw = 0.5
       
@@ -386,9 +386,10 @@ def figureS1(dist_data,plot_bins,pdir=plotdir):
     ax.hist(dist_data[i],bins=plot_bins,color=colors[i],edgecolor='black',
             lw=0.5,label=labels[i],clip_on=False)
     
-    for i in range(1,3):
-        ax.hist(dist_data[i],bins=plot_bins,histtype='step',color=colors[i],
-                lw=lw+1,label=labels[i],clip_on=False)
+    #for i in range(1,3):
+    i = 2
+    ax.hist(dist_data[i],bins=plot_bins,histtype='step',color=colors[i],
+            lw=lw+1,label=labels[i],clip_on=False)
         
     ax.set_xlim([0,plot_bins[-1]])
     ax.set_xlabel('Distance (km)',fontsize=fs)
@@ -424,8 +425,6 @@ def figureS2(obs_data,icon_data,cp_times_obs,cp_times_icon,pdir=plotdir):
     width1 = end1 - start1
     
     ax.add_patch(mpl.patches.Rectangle((start1,ymin),width1,height-8,color='lightgrey')) 
-    # ax.annotate('Nighttime', xy=(start1+width1/2.,height+4), 
-    #             ha='center', va='bottom',rotation=90,fontsize=fs+4)
     
     start2 = mpl.dates.date2num(dt.datetime(2021,6,29,22,0))
     end2   = mpl.dates.date2num(dt.datetime(2021,6,30,0,0))

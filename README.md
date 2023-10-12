@@ -1,5 +1,7 @@
 # How-variable-are-cold-pools_Grant_etal
 
+[![DOI](https://zenodo.org/badge/594098892.svg)](https://zenodo.org/badge/latestdoi/594098892)
+
 ## Overview
 Repository for software and data used for paper "How variable are cold pools?" by Leah D. Grant, Bastian Kirsch, Jennie Bukowski, Nicholas M. Falk, Christine A. Neumaier, Mirjana Sakradzija, Susan C. van den Heever, and Felix Ament, submitted to Geophysical Research Letters  
 

@@ -1,7 +1,7 @@
-# cold_pool_variogram
+# How-variable-are-cold-pools_Grant_etal
 
 ## Overview
-Repository for code and data used for paper "How variable are cold pools?" by Leah D. Grant, Bastian Kirsch, Jennie Bukowski, Nicholas M. Falk, Christine A. Neumaier, Mirjana Sakradzija, Susan C. van den Heever, and Felix Ament (2023), submitted to Geophysical Research Letters  
+Repository for software and data used for paper "How variable are cold pools?" by Leah D. Grant, Bastian Kirsch, Jennie Bukowski, Nicholas M. Falk, Christine A. Neumaier, Mirjana Sakradzija, Susan C. van den Heever, and Felix Ament, submitted to Geophysical Research Letters  
 
 ## File description
 ### Code
@@ -16,10 +16,10 @@ Repository for code and data used for paper "How variable are cold pools?" by Le
 - **matlab_functions/**: sub-folder containing Matlab functions and colormap arrays used by variogram_figures_2_3.m script
 
 ### RAMS_Code
-- **fig1_data_v05.ipynb**: Creates NetCDF file containing data plotted in figure 1.
+- **fig1_data_v05.ipynb**: Creates NetCDF file containing data plotted in Figure 1.
 - **get_network_Ts.py**: Reads in RAMS output, linerally interpolates temperature data to the FESSTVaL network, and saves this data as H5 files as an intermediate step. All of the other scripts in RAMS_code then use these H5 files.
-- **Tref_dTmean_dTmin_stds.ipynb**: Calculates the reference temperature, mean and minimum temperatures, and mean and minimum standard devations. All information included in table 1. 
-- **variogram_data_v02.ipynb**: Creates NetCDF file containing data plotted in figure 3.
+- **Tref_dTmean_dTmin_stds.ipynb**: Calculates the reference temperature, mean and minimum temperatures, and mean and minimum standard devations. All information included in Table 1. 
+- **variogram_data_v02.ipynb**: Creates NetCDF file containing data plotted in Figure 3.
 
 ### Data
 - **ta_network_icon_dom0{x}_20210629.nc**: Simulated air temperature from ICON-LES case study simulations on 29 June 2021 interpolated to locations of FESSTVaL station network (created by read_icon_data.ipynb)
@@ -49,4 +49,4 @@ Universität Hamburg, Hamburg, Germany
 Leah D. Grant (leah.grant@colostate.edu)<br>
 Colorado State University, Fort Collins, CO, United States
 
-6 October 2023
+12 October 2023

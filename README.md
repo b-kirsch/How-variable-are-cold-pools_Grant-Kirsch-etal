@@ -1,4 +1,4 @@
-# How-variable-are-cold-pools_Grant_etal
+# How-variable-are-cold-pools_Grant-Kirsch-etal
 
 [![DOI](https://zenodo.org/badge/594098892.svg)](https://zenodo.org/badge/latestdoi/594098892)
 

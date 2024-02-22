@@ -14,7 +14,7 @@ Required meta data files:
 - cold_pools_fesstval.txt
 
 
-Last updated: 6 October 2023
+Last updated: 22 February 2024
 """
 
 import numpy as np
@@ -48,7 +48,7 @@ plotdir        = maindir+'Cold-Pools/Plots/Paper_Variogram/'
 calc_obs   = True
 start_time = dt.datetime(2021,6,29,0,0)  #dt.datetime(2021,6,29,12,30)  
 end_time   = dt.datetime(2021,6,29,23,59)  #dt.datetime(2021,6,29,16,30)
-freq       = 15 # (min)
+freq       = 1 # (min)
 
 # ICON data
 calc_icon     = True
@@ -62,14 +62,14 @@ write_nc         = False  # Variogram data
 plot_fig1           = False
 plot_figs1_hist     = False
 plot_figs2_time     = False
+plot_figs3_var      = False
 
 
 if plot_fig1: read_grid_data = True
-#if plot_figs1_hist: freq = 1
 #----------------------------------------------------------------------------   
 # Advanced settings
 # Smoothing of APOLLO data
-time_smooth = 30 # 5 (s) Half-window length for smooting of APOLLO T data
+time_smooth = 30 # (s) Half-window length for smooting of APOLLO T data
 
 # Time resolution of data 
 time_res = 10 # (s)
@@ -81,8 +81,8 @@ dist_min,dist_max,dist_res = 0,15000,500 # (m)
 dur_event_obs  = 2  # (hours)
 dur_event_icon = 3
 
-# Detection limit for CP coverage
-# dT_lim_cov = -1  # (K)
+# Detection limit for CP coverage and CP mask
+dT_lim = -1  # (K)
 
 # Reference periods for characterization of Jogi (2021-06-29)
 cp_onset_obs = dt.datetime(2021,6,29,13,30) # UTC
@@ -194,12 +194,16 @@ if calc_obs:
                                                              return_valid_pairs=True) 
             
         if d.date() == dt.date(2021,6,29): 
-            # Calculation of numbers for overview table (Teams)
+            # Calculation of numbers for overview table
             TT_ref_obs  = TT_obs.loc[dt_ref_obs].mean(axis=1).mean()
             dT_mean_obs = (TT_obs.loc[dt_1h_obs] - TT_ref_obs).mean(axis=1).mean()
             dT_min_obs  = (TT_obs.loc[dt_cp_obs] - TT_ref_obs).min().min()
             sT_mean_obs = (TT_obs.loc[dt_1h_obs] - TT_ref_obs).std(axis=1).mean()
             sT_max_obs  = (TT_obs.loc[dt_cp_obs] - TT_ref_obs).std(axis=1).max()
+       
+            # Station-based CP mask      
+            cp_mask_stat_obs = TT_obs.loc[times_obs] - TT_ref_obs <= dT_lim
+            cp_mask_stat_obs.loc[cp_flag_obs[cp_flag_obs == 0].index] = False
     
             
     if write_nc:
@@ -226,8 +230,7 @@ cp_flag_icon = pd.Series(index=times_icon,dtype=float)
 cp_flag_icon[:] = 0
 
 cp_flag_icon.loc[cp_onset_icon:cp_onset_icon+dt.timedelta(hours=dur_event_icon)] = 2
-cp_flag_icon.loc[cp_onset_icon] = 1
-    
+cp_flag_icon.loc[cp_onset_icon] = 1    
 
 valid_pairs_icon = pd.DataFrame(index=pairs_dict[2021].index,columns=domains)
 TT_icon_time     = pd.DataFrame(index=times_icon,columns=domains)   
@@ -252,7 +255,7 @@ if calc_icon:
                 if TT_icon.loc[t].notnull().sum() == 0: continue
                 variogram_icon_times.loc[(t,dom)]  = eva.calc_variogram(TT_icon.loc[t],pairs_year)
      
-            # Calculation of numbers for simulation overview table (Teams)
+            # Calculation of numbers for simulation overview table
             maxis = 0 if dom <= 2 else 1
                 
             TT_ref_icon[dom]  = TT_icon.loc[dt_ref_icon].mean(axis=1).mean()
@@ -267,6 +270,11 @@ if calc_icon:
             valid_pairs_icon[dom] = eva.calc_variogram(TT_icon.loc[dt.datetime(2021,6,29,12,0)],
                                                         pairs_year,return_valid_pairs=True)
             
+            # Station-based CP mask (only DOM3) 
+            if dom == 3:
+                cp_mask_stat_icon = TT_icon - TT_ref_icon[dom] <= dT_lim
+                cp_mask_stat_icon.loc[cp_flag_icon[cp_flag_icon == 0].index] = False
+            
     if write_nc:
         print('Writing variograms to nc files')
         
@@ -279,6 +287,7 @@ if calc_icon:
         
 #----------------------------------------------------------------------------        
 # Reading level3 data (1x1 km2 grid) and calculating CP coverage
+
 if read_grid_data & (len(days) == 1):
     print('Reading level 3 data and re-gridded ICON data')
     date_args = (start_time.year,start_time.month,start_time.day)
@@ -287,34 +296,55 @@ if read_grid_data & (len(days) == 1):
     TT_obs_l3   = fst.read_fesstval_level3('TT',*date_args,**kwargs_l3) 
     meta_data_l3 = fst.read_fesstval_level3('TT',*date_meta,return_meta=True,**kwargs_l3)    
     
-    # # CP Coverage
-    # n_cov_max = meta_data_l3['mask_meshgrid'].sum()
-    # ii_fin    = np.isfinite(TT_obs_l3).sum(axis=(0,1)) > 0
-    
-    # n_cov     = ((TT_obs_l3 - TT_ref_obs) <= dT_lim_cov).sum(axis=(0,1))
-    # cp_coverage_obs = pd.Series(n_cov/n_cov_max,index=meta_data_l3['time'],dtype=float)
-    # cp_coverage_obs[~ii_fin] = np.nan
+    # CP Coverage
+    cp_mask_grid_obs = (TT_obs_l3 - TT_ref_obs) <= dT_lim
+    n_cov     = cp_mask_grid_obs.sum(axis=(0,1))
+    n_cov_max = meta_data_l3['mask_meshgrid'].sum()
+    cp_coverage_obs = pd.Series(n_cov/n_cov_max,index=meta_data_l3['time'],dtype=float)
+    ii_fin    = np.isfinite(TT_obs_l3).sum(axis=(0,1)) > 0
+    cp_coverage_obs[~ii_fin] = np.nan
      
-        
-    # ICON
-    dom_comp  = 3
-    TT_icon_grid_dom3 = vpr.read_icon_les(*date_args,dom_comp,type_str='grid')
-    meta_icon_grid = vpr.read_icon_les(*date_args,dom_comp,type_str='grid',
+    
+    # ICON (DOM03)
+    TT_icon_grid_dom3 = vpr.read_icon_les(*date_args,3,type_str='grid')
+    meta_icon_grid = vpr.read_icon_les(*date_args,3,type_str='grid',
                                        return_meta=True) 
     
-    # # CP Coverage
-    # n_cov_max = np.isfinite(TT_icon_grid_dom3[:,:,:]).sum(axis=(0,1)).max()
-    # ii_fin    = np.isfinite(TT_icon_grid_dom3).sum(axis=(0,1)) > 0
+    # CP Coverage
+    cp_mask_grid_icon = (TT_icon_grid_dom3 - TT_ref_icon[3]) <= dT_lim
+    n_cov     = cp_mask_grid_icon.sum(axis=(0,1))
+    n_cov_max = np.isfinite(TT_icon_grid_dom3[:,:,:]).sum(axis=(0,1)).max()
+    cp_coverage_icon = pd.Series(n_cov/n_cov_max,index=meta_icon_grid['time'],dtype=float)
+    ii_fin    = np.isfinite(TT_icon_grid_dom3).sum(axis=(0,1)) > 0
+    cp_coverage_icon[~ii_fin] = np.nan
     
-    # n_cov     = ((TT_icon_grid_dom3 - TT_ref_icon[dom_comp]) <= dT_lim_cov).sum(axis=(0,1))
-    # cp_coverage_icon = pd.Series(n_cov/n_cov_max,index=meta_icon_grid['time'],dtype=float)
-    # cp_coverage_icon[~ii_fin] = np.nan
+
+#----------------------------------------------------------------------------  
+# *** ADDED FOR REVISION 2 (Feb 2024) ***
+# Calculate variograms only for stations inside the cold pool (Jogi case)
+# Observations and ICON DOM03
+if (start_time.date() == dt.date(2021,6,29)) & (end_time.date() == dt.date(2021,6,29)):
+    
+    variogram_obs_times_inside = pd.DataFrame(index=times_obs,columns=dist_mids)
+    for t in times_obs:
+        if cp_mask_stat_obs.loc[t].sum() == 0: continue
+        TT_obs_masked = TT_obs.loc[t].mask(cp_mask_stat_obs.loc[t] == False)
+        variogram_obs_times_inside.loc[t] = eva.calc_variogram(TT_obs_masked,
+                                                               pairs_dict[2021])
+        
+    TT_icon = vpr.read_icon_les(2021,6,29,3)    
+    variogram_icon_times_inside = pd.DataFrame(index=times_icon,columns=dist_mids) 
+    for t in times_icon:
+        if cp_mask_stat_icon.loc[t].sum() == 0: continue
+        TT_icon_masked = TT_icon.loc[t].mask(cp_mask_stat_icon.loc[t] == False)
+        variogram_icon_times_inside.loc[t] = eva.calc_variogram(TT_icon_masked,
+                                                                pairs_dict[2021])    
 
 
 #----------------------------------------------------------------------------
 #----------------------------------------------------------------------------
 # Plotting    
-if plot_fig1 & read_grid_data:
+if plot_fig1:
     
     i_obs  = meta_data_l3['time'].get_loc(dt.datetime(2021,6,29,14,15))
     i_icon = meta_icon_grid['time'].get_loc(dt.datetime(2021,6,29,14,0))
@@ -347,7 +377,22 @@ if plot_figs1_hist:
     
     
 if plot_figs2_time:
-    vpr.figureS2(TT_obs.mean(axis=1),TT_icon_time,cp_onset_obs,cp_onset_icon)    
+    vpr.figureS2(TT_obs.mean(axis=1),TT_icon_time,cp_onset_obs,cp_onset_icon) 
+    
+
+if plot_figs3_var:
+    # Comparison of OBS-Jogi and CS-Jogi-156m variograms calculated for 
+    # all stations vs. only stations inside the cold pool
+    
+    # Temporal median over cold pool periods (OBS: 2h, ICON: 3h)
+    
+    variogram_obs_original = variogram_obs_times[cp_flag_obs >= 1].median(axis=0)
+    variogram_obs_inside = variogram_obs_times_inside[cp_flag_obs >= 1].median(axis=0)
+    variogram_icon_original = variogram_icon_times.xs(3,level=1)[cp_flag_icon >= 1].median(axis=0)
+    variogram_icon_inside = variogram_icon_times_inside[cp_flag_icon >= 1].median(axis=0)
+    
+    vpr.figureS3(variogram_obs_original,variogram_obs_inside,
+                       variogram_icon_original,variogram_icon_inside)    
 
 
 #----------------------------------------------------------------------------

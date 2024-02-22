@@ -5,7 +5,7 @@
 Reading, analysis and plotting routines to be used in variogram_paper_obs_icon.py
 
 
-Last updated: 11 October 2023
+Last updated: 22 February 2024
 """
 
 import os
@@ -18,7 +18,6 @@ import matplotlib.pyplot as plt
 from cmcrameri import cm as cmc
 from netCDF4 import Dataset
 import fesstval_routines as fst
-
 
 #----------------------------------------------------------------------------
 # Paths and meta data files
@@ -254,7 +253,6 @@ def read_rams_shear(type_str,fname='IDEAL-Upshear-100m-fig-1-data_v2.nc',datadir
     
     return data     
 
-
 # Truncate colormap at given relative ranges
 def truncate_colormap(cmap,minval=0.0,maxval=1.0,n=100):
     new_cmap = mpl.colors.LinearSegmentedColormap.from_list(
@@ -364,7 +362,7 @@ def figure1(obs_data,icon_data,rams_data_ideal,
     cbar.ax.set_xlabel('Temperature perturbation (K)')
     cbar.set_ticks(np.arange(val_min,val_max+val_res,2))
         
-    plotname = pdir+'figure1_grl.png'
+    plotname = pdir+'figure1_grl.png' # pdf/png
     fig.savefig(plotname,bbox_inches='tight')
     plt.close()      
     
@@ -374,11 +372,11 @@ def figure1(obs_data,icon_data,rams_data_ideal,
 def figureS1(dist_data,plot_bins,pdir=plotdir):
 
     x_res = 3000
-    colors = ['darkgrey','royalblue','black'] # orange
+    colors = ['darkgrey','royalblue','black']
     labels = ['Full network','OBS-Jogi (minimum)','CS-Jogi-75m']
     lw = 0.5
       
-    print('Plotting distance histogram of station pairs')
+    print('Plotting Figure S1 (Histogram)')
     
     fig,ax = plt.subplots(1,1,figsize=(5,4),dpi=400)
     
@@ -401,7 +399,7 @@ def figureS1(dist_data,plot_bins,pdir=plotdir):
     ax.legend(fontsize=fs,loc='upper left')
     
     plt.tight_layout()
-    plotname = pdir+'network_hist_grl.png'
+    plotname = pdir+'figureS1_grl.png' # png
     fig.savefig(plotname,bbox_inches='tight')
     plt.close()    
     print('Plot done!') 
@@ -409,7 +407,7 @@ def figureS1(dist_data,plot_bins,pdir=plotdir):
 
 def figureS2(obs_data,icon_data,cp_times_obs,cp_times_icon,pdir=plotdir):
 
-    print('Plotting time series of observational and simulation data')
+    print('Plotting Figure S2 (Time series)')
     
     lw = 2
     labels = ['OBS-Jogi','CS-Jogi-625m','CS-Jogi-312m','CS-Jogi-156m','CS-Jogi-75m']
@@ -459,11 +457,47 @@ def figureS2(obs_data,icon_data,cp_times_obs,cp_times_icon,pdir=plotdir):
     ax.legend(fontsize=fs,loc='upper left')
 
     plt.tight_layout()
-    plotname = plotdir+'timeseries_grl.png'
+    plotname = plotdir+'figureS2_grl.png' # png
     fig.savefig(plotname,bbox_inches='tight')
     plt.close()    
     print('Plot done!')   
     return
+
+def figureS3(variogram_obs_original,variogram_obs_inside,
+             variogram_icon_original,variogram_icon_inside,
+             pdir=plotdir):
+    
+    var_data = [variogram_obs_original,variogram_obs_inside,
+                variogram_icon_original,variogram_icon_inside]
+    labels = ['OBS-Jogi (Full network)', 'OBS-Jogi (Inside CP)',
+              'CS-Jogi-156m (Full network)', 'CS-Jogi-156m (Inside CP)']
+    colors = ['black', 'black', 'darkgoldenrod', 'darkgoldenrod']
+    styles = ['solid', 'dotted', 'solid', 'dotted']
+    
+    print('Plotting Figure S3 (Variograms)')
+    
+    fig,ax = plt.subplots(1,1,figsize=(5,4),dpi=400)
+    
+    for i,v in enumerate(var_data):
+        ax.plot(v.index, v, color=colors[i], linestyle=styles[i], 
+                label=labels[i], linewidth=2)
+        
+    ax.set_xlim([0,15000])
+    ax.set_xlabel('Distance (km)',fontsize=fs)
+    ax.set_xticks(np.arange(0,18000,3000))
+    ax.set_xticklabels((ax.get_xticks()/1000).astype(int).astype(str))
+    ax.set_ylim([0,8.5])
+    ax.set_yticks(np.arange(0,10,2))
+    ax.set_ylabel(r'Temperature Variogram (K$^2$)',fontsize=fs)
+    ax.grid(visible=False,axis='both')
+    ax.legend(fontsize=fs-2,loc='upper left')
+    
+    plt.tight_layout()
+    plotname = pdir+'figureS3_grl.pdf' #png
+    fig.savefig(plotname,bbox_inches='tight')
+    plt.close()    
+    print('Plot done!')
+    return    
 
 
 def write_netcdf(fname,dtime,variogram_data,bins,flag,odir=datadir_io):
